@@ -29,13 +29,24 @@ Thank you for your interest in contributing! This guide walks you through everyt
 
 Make sure you have the following installed before you begin:
 
+- **Bun** v1.3.5 or higher — this project uses Bun as its primary package manager
+
+  Install it from [https://bun.sh](https://bun.sh) or run:
+
+  ```powershell
+  npm install -g bun
+  ```
+
+  Verify the installation:
+
+  ```bash
+  bun --version
+  ```
+
 - **Node.js** v20 or higher
-- **npm** v10 or higher
 - **Git**
 
-> This project uses `bun@1.3.5` as its package manager declaration, but npm works fine for local development.
-
-> **Bun required for pre-push hook** — The project uses `bun` in its Husky pre-push hook. Install it via `npm install -g bun` or your push will be blocked. Alternatively use `git push --no-verify` for documentation-only changes.
+> **Why Bun?** The project declares `"packageManager": "bun@1.3.5"` in `package.json`. While `npm` can install dependencies, Bun is required for Husky's pre-push hook — pushing without it will fail with `bun: command not found`.
 
 ---
 
@@ -49,15 +60,36 @@ git clone https://github.com/YOUR_USERNAME/community-app.git
 cd community-app
 ```
 
+3. Add the upstream remote so you can pull future changes:
+
+```bash
+git remote add upstream https://github.com/wigxel/community-app.git
+```
+
 ---
 
 ## Installing Dependencies
 
-Run the following to install all project dependencies:
+Use Bun to install dependencies:
 
 ```bash
-npm install
+bun install
 ```
+
+> Do **not** mix `npm install` and `bun install` in the same setup. If you accidentally ran `npm install` first, delete `node_modules` and `package-lock.json` before running `bun install`:
+>
+> ```powershell
+> # Windows (PowerShell)
+> Remove-Item -Recurse -Force node_modules
+> Remove-Item package-lock.json
+> bun install
+> ```
+
+> ```bash
+> # macOS/Linux
+> rm -rf node_modules package-lock.json
+> bun install
+> ```
 
 ### Troubleshooting Dependency Conflicts
 
@@ -66,38 +98,25 @@ This project uses cutting-edge package versions. If you encounter `ERESOLVE` pee
 **React version mismatch:**
 
 ```bash
-npm install react@~19.1.4 react-dom@~19.1.4
+bun add react@~19.1.4 react-dom@~19.1.4
 ```
 
 **Vitest version mismatch:**
 
 ```bash
-npm install vitest@^4.0.16 @vitest/coverage-v8@^4.0.16
+bun add vitest@^4.0.16 @vitest/coverage-v8@^4.0.16
 ```
 
 **`@types/node` version mismatch:**
 
 ```bash
-npm install @types/node@^22.0.0 --save-dev
+bun add -d @types/node@^22.0.0
 ```
 
 Or resolve all at once:
 
 ```bash
-npm install react@~19.1.4 react-dom@~19.1.4 @types/node@^22.0.0 @vitest/coverage-v8@^4.0.16 vitest@^4.0.16
-```
-
-If conflicts persist, a clean reinstall often helps:
-
-```bash
-# On Windows (PowerShell)
-Remove-Item -Recurse -Force node_modules
-Remove-Item package-lock.json
-npm install
-
-# On macOS/Linux
-rm -rf node_modules package-lock.json
-npm install
+bun add react@~19.1.4 react-dom@~19.1.4 && bun add -d @types/node@^22.0.0 @vitest/coverage-v8@^4.0.16 vitest@^4.0.16
 ```
 
 ---
@@ -155,7 +174,7 @@ NEXT_PUBLIC_CLERK_FRONTEND_API_URL=https://your-app.clerk.accounts.dev
 https://dashboard.convex.dev/d/YOUR_DEPLOYMENT_ID/settings/environment-variables
 ```
 
-You can paste your entire `.env.local` contents directly into the Convex dashboard — it will parse all variables automatically.
+> You can paste your entire `.env.local` contents directly into the Convex dashboard — it will parse all variables automatically.
 
 ### Final `.env.local` Structure
 
@@ -188,7 +207,7 @@ npx convex dev
 **Terminal 2 — Next.js frontend:**
 
 ```bash
-npm run dev
+bun run dev
 ```
 
 Then open [http://localhost:3000](http://localhost:3000) in your browser.
@@ -244,7 +263,7 @@ Husky is configured to run lint-staged checks on every commit. Your staged files
 Run the full check to ensure everything passes:
 
 ```bash
-npm run round-check
+bun run round-check
 ```
 
 This runs lint, format, tests, and a production build in sequence. Fix any failures before opening your PR.
@@ -252,8 +271,14 @@ This runs lint, format, tests, and a production build in sequence. Fix any failu
 Also make sure:
 
 - [ ] `.env.local` is **not** included in your commit
-- [ ] `package-lock.json` is excluded unless your PR intentionally updates dependencies
+- [ ] `bun.lockb` is excluded unless your PR intentionally updates dependencies
+- [ ] `convex/` folder changes are discarded — run `git restore convex/` before staging
 - [ ] Your branch is up to date with the upstream `main` branch:
+
+```bash
+git fetch upstream
+git rebase upstream/main
+```
 
 ---
 
