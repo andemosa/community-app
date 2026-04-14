@@ -45,8 +45,8 @@ const schema = defineSchema({
     username: v.string(),
     title: v.nullable(v.id("titles")),
     links: v.optional(link_schema),
-    shortBio: v.nullable(v.string()), // max 250 characters
-    projects: project_schema,
+    shortBio: v.optional(v.string()), // max 250 characters
+    projects: v.optional(project_schema),
   }).index("by_username", ["username"]),
 });
 

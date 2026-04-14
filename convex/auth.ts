@@ -48,7 +48,7 @@ export const createUser = mutation({
         profileImage: null,
         username: args.username,
         links: [],
-        shortBio: null,
+        shortBio: "",
         projects: [],
       });
     }
